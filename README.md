@@ -1,1 +1,26 @@
 # etcd-golang
+
+Based on: 
+- https://eli.thegreenplace.net/2019/on-concurrency-in-go-http-servers/
+- https://www.compose.com/articles/utilizing-etcd3-with-go/
+
+```
+rm -rf /tmp/etcd-data.tmp && mkdir -p /tmp/etcd-data.tmp && \
+  docker rmi gcr.io/etcd-development/etcd:v3.3.9 || true && \
+  docker run \
+  -p 2379:2379 \
+  -p 2380:2380 \
+  --mount type=bind,source=/tmp/etcd-data.tmp,destination=/etcd-data \
+  --name etcd-gcr-v3.3.9 \
+  gcr.io/etcd-development/etcd:v3.3.9 \
+  /usr/local/bin/etcd \
+  --name s1 \
+  --data-dir /etcd-data \
+  --listen-client-urls http://0.0.0.0:2379 \
+  --advertise-client-urls http://0.0.0.0:2379 \
+  --listen-peer-urls http://0.0.0.0:2380 \
+  --initial-advertise-peer-urls http://0.0.0.0:2380 \
+  --initial-cluster s1=http://0.0.0.0:2380 \
+  --initial-cluster-token tkn \
+  --initial-cluster-state new
+```
